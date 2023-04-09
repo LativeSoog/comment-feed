@@ -1,31 +1,3 @@
-// const commentList = document.getElementById('comments__list');
-// const inputName = document.getElementById('input__name');
-// const commentText = document.getElementById('comment__text')
-// const addCommentButton = document.getElementById('add-comm-button')
-
-// addCommentButton.addEventListener('click', () => {
-//   const oldCommentList = commentList.innerHTML;
-
-//   commentList.innerHTML = oldCommentList + `<li class="comment">
-//     <div class="comment-header">
-//       <div>${inputName.value}</div>
-//       <div>${commentDateMinute}</div>
-//         </div>
-//         <div class="comment-body">
-//         <div class="comment-text">
-//           ${commentText.value}
-//         </div>
-//       </div>
-//       <div class="comment-footer">
-//         <div class="likes">
-//           <span class="likes-counter">0</span>
-//           <button class="like-button"></button>
-//         </div>
-//       </div>
-//     </li>`
-// })
-
-
 const listComment = document.getElementById('comments__list');
 const inputName = document.getElementById('input__name');
 const textComment = document.getElementById('comment__text');
@@ -44,6 +16,78 @@ const getDate = () => {
   return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 
+//Рендер HTML
+
+const commentList = [{
+  name: "Глеб Фокин",
+  date: "12.02.22 12:18",
+  text: "Это будет первый комментарий на этой странице",
+  likes: 3,
+  activeLike: false,
+  activeClass: ""
+},
+{
+  name: "Варвана Н.",
+  date: "13.02.22 19:22",
+  text: "Мне нравится как оформлена эта страница! ❤",
+  likes: 75,
+  activeLike: false,
+  activeClass: ""
+}]
+
+//Добавление лайка
+const addLikeButton = () => {
+  const buttonsLikesComment = document.querySelectorAll(".like-button");
+  for (const buttonLike of buttonsLikesComment) {
+    buttonLike.addEventListener("click", () => {
+      index = buttonLike.dataset.buttonLike;
+
+      if (commentList[index].activeLike === false) {
+        commentList[index].activeLike = true
+        commentList[index].likes += 1
+        commentList[index].activeClass = "-active-like"
+      } else {
+        commentList[index].activeLike = false
+        commentList[index].likes -= 1
+        commentList[index].activeClass = ""
+      }
+      renderCommentList()
+    })
+  }
+}
+
+const renderCommentList = () => {
+  commentListHtml = commentList.map((comment, index) => {
+    return `<li class="comment">
+    <div class="comment-header">
+      <div>${comment.name}</div>
+      <div>${comment.date}</div>
+    </div>
+    <div class="comment-body">
+      <div class="comment-text">
+        ${comment.text}
+      </div>
+    </div>
+    <div class="comment-footer">
+      <div class="likes">
+        <span class="likes-counter">${comment.likes}</span>
+        <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+      </div>
+    </div>
+  </li>`
+  }).join('')
+  listComment.innerHTML = commentListHtml
+
+  addLikeButton()
+}
+
+renderCommentList()
+
+
+
+//Лайк добавляется только одному ком-ту, продумать снятие лайка, сделать наложение стиля закрашенного сердца
+
+
 //Callback комментария
 const commentSend = () => {
   inputName.classList.remove('add-form-error')
@@ -55,27 +99,23 @@ const commentSend = () => {
     return textComment.classList.add('add-form-error')
   }
 
-  listComment.innerHTML += `<li class="comment">
-  <div class="comment-header">
-    <div>${inputName.value}</div>
-    <div>${getDate()}</div>
-  </div>
-  <div class="comment-body">
-    <div class="comment-text">
-      ${textComment.value}
-    </div>
-  </div>
-  <div class="comment-footer">
-    <div class="likes">
-      <span class="likes-counter">0</span>
-      <button class="like-button -active-like"></button>
-    </div>
-  </div>
-</li>`
+  commentList.push({
+    name: inputName.value,
+    date: getDate(),
+    text: textComment.value,
+    likes: 0,
+    activeLike: false
+  })
 }
 
+//Добавление комментария
 buttonAddComment.addEventListener('click', () => {
   commentSend()
+  addLikeButton()
+  renderCommentList()
+
+  inputName.value = ""
+  textComment.value = ""
 })
 
 //Отправка по кнопке Enter
