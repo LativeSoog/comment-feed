@@ -24,7 +24,8 @@ const commentList = [{
   text: "Это будет первый комментарий на этой странице",
   likes: 3,
   activeLike: false,
-  activeClass: ""
+  activeClass: "",
+  isEdit: false
 },
 {
   name: "Варвана Н.",
@@ -32,7 +33,9 @@ const commentList = [{
   text: "Мне нравится как оформлена эта страница! ❤",
   likes: 75,
   activeLike: false,
-  activeClass: ""
+  activeClass: "",
+  isEdit: false
+
 }]
 
 //Добавление лайка
@@ -56,36 +59,52 @@ const addLikeButton = () => {
   }
 }
 
+//Редактирование комментария
+const editComment = () => {
+  const buttonsEditComment = document.querySelectorAll(".edit-comment")
+  for (const buttonEdit of buttonsEditComment) {
+    buttonEdit.addEventListener("click", () => {
+      index = buttonEdit.dataset.buttonEdit;
+      console.log(index);
+      commentList[index].isEdit == false ? commentList[index].isEdit = true : commentList[index].isEdit = false
+      renderCommentList()
+    })
+  }
+}
+
+
 const renderCommentList = () => {
   commentListHtml = commentList.map((comment, index) => {
-    return `<li class="comment">
-    <div class="comment-header">
-      <div>${comment.name}</div>
-      <div>${comment.date}</div>
-    </div>
-    <div class="comment-body">
-      <div class="comment-text">
-        ${comment.text}
+    return commentList.isEdit == true ?
+      `тут должно быть редактирование` :
+      `<li class="comment">
+      <div class="comment-header">
+        <div>${comment.name}</div>
+        <div>${comment.date}</div>
       </div>
-    </div>
-    <div class="comment-footer">
-      <div class="likes">
-        <span class="likes-counter">${comment.likes}</span>
-        <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+      <div class="comment-body">
+        <div class="comment-text">
+          ${comment.text}
+        </div>
+        <div class="comment-text">
+        <button class="edit-comment" data-button-edit=${index}>Редактировать</button>
+        </div>
       </div>
-    </div>
-  </li>`
+      <div class="comment-footer">
+        <div class="likes">
+          <span class="likes-counter">${comment.likes}</span>
+          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+        </div>
+      </div>
+    </li>`
   }).join('')
   listComment.innerHTML = commentListHtml
 
   addLikeButton()
+  editComment()
 }
 
 renderCommentList()
-
-
-
-//Лайк добавляется только одному ком-ту, продумать снятие лайка, сделать наложение стиля закрашенного сердца
 
 
 //Callback комментария
