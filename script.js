@@ -42,9 +42,9 @@ const commentList = [{
 const addLikeButton = () => {
   const buttonsLikesComment = document.querySelectorAll(".like-button");
   for (const buttonLike of buttonsLikesComment) {
-    buttonLike.addEventListener("click", () => {
+    buttonLike.addEventListener("click", (event) => {
       index = buttonLike.dataset.buttonLike;
-
+      event.stopPropagation()
       if (commentList[index].activeLike === false) {
         commentList[index].activeLike = true
         commentList[index].likes += 1
@@ -72,7 +72,6 @@ const editComment = () => {
 }
 
 //Сохранение комментария
-
 const saveComment = () => {
   const buttonsSaveComment = document.querySelectorAll(".save-comment")
   for (const buttonSave of buttonsSaveComment) {
@@ -82,6 +81,19 @@ const saveComment = () => {
       commentList[index].text = editTextComment.value
       commentList[index].isEdit = false;
       renderCommentList()
+    })
+  }
+}
+
+//Ответ на комментарий
+const replyComment = () => {
+  const contentsReplyComments = document.querySelectorAll(".comment");
+  for (const replyComment of contentsReplyComments) {
+    replyComment.addEventListener("click", () => {
+      index = replyComment.dataset.commentContent;
+      return textComment.value =
+        `> ${commentList[index].text}
+        ${commentList[index].name}`
     })
   }
 }
@@ -109,7 +121,7 @@ const renderCommentList = () => {
         </div>
       </div>
     </li>` :
-      `<li class="comment">
+      `<li class="comment" data-comment-content="${index}">
       <div class="comment-header">
         <div>${comment.name}</div>
         <div>${comment.date}</div>
@@ -135,6 +147,7 @@ const renderCommentList = () => {
   addLikeButton();
   editComment();
   saveComment();
+  replyComment()
 }
 
 renderCommentList()
