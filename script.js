@@ -65,18 +65,50 @@ const editComment = () => {
   for (const buttonEdit of buttonsEditComment) {
     buttonEdit.addEventListener("click", () => {
       index = buttonEdit.dataset.buttonEdit;
-      console.log(index);
       commentList[index].isEdit == false ? commentList[index].isEdit = true : commentList[index].isEdit = false
       renderCommentList()
     })
   }
 }
 
+//Сохранение комментария
+
+const saveComment = () => {
+  const buttonsSaveComment = document.querySelectorAll(".save-comment")
+  for (const buttonSave of buttonsSaveComment) {
+    const editTextComment = document.getElementById(`edit${index}`)
+    buttonSave.addEventListener("click", () => {
+      index = buttonSave.dataset.buttonSave;
+      commentList[index].text = editTextComment.value
+      commentList[index].isEdit = false;
+      renderCommentList()
+    })
+  }
+}
 
 const renderCommentList = () => {
   commentListHtml = commentList.map((comment, index) => {
-    return commentList.isEdit == true ?
-      `тут должно быть редактирование` :
+    return commentList[index].isEdit == true ?
+      `<li class="comment">
+      <div class="comment-header">
+        <div>${comment.name}</div>
+        <div>${comment.date}</div>
+      </div>
+      <div class="comment-body">
+        <div class="comment-text">
+          <textarea id="edit${index}" class="editText" type="textarea">${comment.text}</textarea>
+        </div>
+        <div class="comment-text">
+        <button class="save-comment" data-button-save=${index}>Cохранить</button>
+        </div>
+      </div>
+      <div class="comment-footer">
+        <div class="likes">
+          <span class="likes-counter">${comment.likes}</span>
+          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+        </div>
+      </div>
+    </li>` :
       `<li class="comment">
       <div class="comment-header">
         <div>${comment.name}</div>
@@ -100,8 +132,9 @@ const renderCommentList = () => {
   }).join('')
   listComment.innerHTML = commentListHtml
 
-  addLikeButton()
-  editComment()
+  addLikeButton();
+  editComment();
+  saveComment();
 }
 
 renderCommentList()
@@ -131,6 +164,8 @@ const commentSend = () => {
 buttonAddComment.addEventListener('click', () => {
   commentSend()
   addLikeButton()
+  editComment()
+  saveComment()
   renderCommentList()
 
   inputName.value = ""

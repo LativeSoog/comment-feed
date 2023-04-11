@@ -155,6 +155,17 @@ body {
     cursor: pointer;
   }
 
+  .save-comment {
+    margin-top: 24px;
+    font-size: 18px;
+    padding: 10px 20px;
+    color: #ffffff;
+    background-color: #008800;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+  }
+
   .add-form-button:hover {
     opacity: 0.9;
   }
