@@ -63,7 +63,8 @@ const addLikeButton = () => {
 const editComment = () => {
   const buttonsEditComment = document.querySelectorAll(".edit-comment")
   for (const buttonEdit of buttonsEditComment) {
-    buttonEdit.addEventListener("click", () => {
+    buttonEdit.addEventListener("click", (event) => {
+      event.stopPropagation();
       index = buttonEdit.dataset.buttonEdit;
       commentList[index].isEdit == false ? commentList[index].isEdit = true : commentList[index].isEdit = false
       renderCommentList()
@@ -91,9 +92,11 @@ const replyComment = () => {
   for (const replyComment of contentsReplyComments) {
     replyComment.addEventListener("click", () => {
       index = replyComment.dataset.commentContent;
-      return textComment.value =
-        `> ${commentList[index].text}
-        ${commentList[index].name}`
+      textComment.value =
+        "QUOTE_START" +
+        ` ${commentList[index].text}
+${commentList[index].name}` +
+        "QUOTE_END "
     })
   }
 }
@@ -165,9 +168,17 @@ const commentSend = () => {
   }
 
   commentList.push({
-    name: inputName.value,
+    name: inputName.value
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("/", "&frasl;"),
     date: getDate(),
-    text: textComment.value,
+    text: textComment.value
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("/", "&frasl;")
+      .replaceAll("QUOTE_START", '<div class="quote">')
+      .replaceAll("QUOTE_END", '</div>'),
     likes: 0,
     activeLike: false
   })
