@@ -42,9 +42,9 @@ const commentList = [{
 const addLikeButton = () => {
   const buttonsLikesComment = document.querySelectorAll(".like-button");
   for (const buttonLike of buttonsLikesComment) {
-    buttonLike.addEventListener("click", () => {
+    buttonLike.addEventListener("click", (event) => {
       index = buttonLike.dataset.buttonLike;
-
+      event.stopPropagation()
       if (commentList[index].activeLike === false) {
         commentList[index].activeLike = true
         commentList[index].likes += 1
@@ -63,7 +63,8 @@ const addLikeButton = () => {
 const editComment = () => {
   const buttonsEditComment = document.querySelectorAll(".edit-comment")
   for (const buttonEdit of buttonsEditComment) {
-    buttonEdit.addEventListener("click", () => {
+    buttonEdit.addEventListener("click", (event) => {
+      event.stopPropagation();
       index = buttonEdit.dataset.buttonEdit;
       commentList[index].isEdit == false ? commentList[index].isEdit = true : commentList[index].isEdit = false
       renderCommentList()
@@ -72,7 +73,6 @@ const editComment = () => {
 }
 
 //Сохранение комментария
-
 const saveComment = () => {
   const buttonsSaveComment = document.querySelectorAll(".save-comment")
   for (const buttonSave of buttonsSaveComment) {
@@ -82,6 +82,21 @@ const saveComment = () => {
       commentList[index].text = editTextComment.value
       commentList[index].isEdit = false;
       renderCommentList()
+    })
+  }
+}
+
+//Ответ на комментарий
+const replyComment = () => {
+  const contentsReplyComments = document.querySelectorAll(".comment");
+  for (const replyComment of contentsReplyComments) {
+    replyComment.addEventListener("click", () => {
+      index = replyComment.dataset.commentContent;
+      textComment.value =
+        "QUOTE_START" +
+        ` ${commentList[index].text}
+${commentList[index].name}` +
+        "QUOTE_END "
     })
   }
 }
@@ -109,7 +124,7 @@ const renderCommentList = () => {
         </div>
       </div>
     </li>` :
-      `<li class="comment">
+      `<li class="comment" data-comment-content="${index}">
       <div class="comment-header">
         <div>${comment.name}</div>
         <div>${comment.date}</div>
@@ -135,6 +150,7 @@ const renderCommentList = () => {
   addLikeButton();
   editComment();
   saveComment();
+  replyComment()
 }
 
 renderCommentList()
@@ -152,9 +168,17 @@ const commentSend = () => {
   }
 
   commentList.push({
-    name: inputName.value,
+    name: inputName.value
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("/", "&frasl;"),
     date: getDate(),
-    text: textComment.value,
+    text: textComment.value
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("/", "&frasl;")
+      .replaceAll("QUOTE_START", '<div class="quote">')
+      .replaceAll("QUOTE_END", '</div>'),
     likes: 0,
     activeLike: false
   })
