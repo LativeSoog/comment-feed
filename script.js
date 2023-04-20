@@ -1,4 +1,5 @@
 const listComment = document.getElementById('comments__list');
+const formAdd = document.getElementById('form')
 const inputName = document.getElementById('input__name');
 const textComment = document.getElementById('comment__text');
 const buttonAddComment = document.getElementById('button__add-comment');
@@ -109,7 +110,7 @@ ${commentList[index].name}` +
 
 //Рендер HTML
 const renderCommentList = () => {
-  commentListHtml = commentList.map((comment, index) => {
+  commentListHtml = commentList?.map((comment, index) => {
     return commentList[index].isEdit == true ?
       `<li class="comment">
       <div class="comment-header">
@@ -173,22 +174,6 @@ const commentSend = () => {
   if (textComment.value.trim() === '') {
     return textComment.classList.add('add-form-error')
   }
-
-  // commentList.push({
-  //   name: inputName.value
-  //     .replaceAll("<", "&lt;")
-  //     .replaceAll(">", "&gt;")
-  //     .replaceAll("/", "&frasl;"),
-  //   date: getDate(),
-  //   text: textComment.value
-  //     .replaceAll("<", "&lt;")
-  //     .replaceAll(">", "&gt;")
-  //     .replaceAll("/", "&frasl;")
-  //     .replaceAll("QUOTE_START", '<div class="quote">')
-  //     .replaceAll("QUOTE_END", '</div>'),
-  //   likes: 0,
-  //   activeLike: false
-  // })
 
   fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
     method: "POST",
