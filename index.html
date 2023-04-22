@@ -7,7 +7,11 @@
 </head>
 
 <body>
+
   <div class="container">
+    <div class="loading" id="loading">
+      Комментарии загружаются, пожалуйста подождите :)
+    </div>
     <ul class="comments" id="comments__list">
       <!-- Рендер страницы происходит из JS -->
     </ul>
@@ -15,13 +19,17 @@
       <input type="text" class="add-form-name" id="input__name" placeholder="Введите ваше имя" value="" />
       <textarea type="textarea" class="add-form-text" id="comment__text" placeholder="Введите ваш коментарий"
         rows="4"></textarea>
-      <div class="add-form-row">
+      <div class="add-form-row" id="">
         <button class="add-form-button" id="button__add-comment">Написать</button>
       </div>
+    </div>
+    <div class="loading" id="sendComment">
+      Ваш комментарий добавляется. Пожалуйста, подождите...
     </div>
     <div class="add-form-row">
       <button class="del-last-comment" id="button__del-comment">Удалить последний комментарий</button>
     </div>
+
   </div>
 </body>
 

@@ -1,8 +1,11 @@
 const listComment = document.getElementById('comments__list');
-const formAdd = document.getElementById('form')
+const addForm = document.getElementById('form')
 const inputName = document.getElementById('input__name');
 const textComment = document.getElementById('comment__text');
 const buttonAddComment = document.getElementById('button__add-comment');
+const loadingComment = document.getElementById('sendComment');
+loadingComment.setAttribute("style", "display: none");
+
 
 //Получение и форматирование даты
 const getDate = () => {
@@ -18,12 +21,14 @@ const getDate = () => {
 }
 
 //GET
-
 const getListComment = () => {
-  fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
+  return fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
     method: "GET"
-  }).then((response) => {
-    response.json().then((responseData) => {
+  })
+    .then((response) => {
+      return response.json()
+    })
+    .then((responseData) => {
       const transformComment = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
@@ -35,14 +40,20 @@ const getListComment = () => {
       });
       commentList = transformComment;
       renderCommentList()
+      loadingCommentList();
     })
-  })
+
 }
 
-getListComment()
-
+getListComment();
 
 let commentList = []
+
+//Загрузка комментариев
+const loadingCommentList = () => {
+  const loadingPage = document.getElementById('loading');
+  loadingPage.setAttribute("style", "display: none");
+}
 
 
 //Добавление лайка
@@ -175,6 +186,9 @@ const commentSend = () => {
     return textComment.classList.add('add-form-error')
   }
 
+  addForm.setAttribute("style", "display: none");
+  loadingComment.setAttribute("style", "display: block")
+
   fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
     method: "POST",
     body: JSON.stringify({
@@ -190,12 +204,17 @@ const commentSend = () => {
         .replaceAll("QUOTE_START", '<div class="quote">')
         .replaceAll("QUOTE_END", '</div>'),
     })
-  }).then((response) => {
-    response.json().then((responseData) => {
-    }).then((response) => {
-      getListComment()
-    })
   })
+    .then((response) => {
+      return response.json()
+    })
+    .then((response) => {
+      return getListComment()
+    })
+    .then((addForms) => {
+      addForm.setAttribute("style", "display: block")
+      loadingComment.setAttribute("style", "display: none")
+    })
 }
 
 //Добавление комментария
