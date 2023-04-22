@@ -110,7 +110,7 @@ ${commentList[index].name}` +
 
 //Рендер HTML
 const renderCommentList = () => {
-  commentListHtml = commentList?.map((comment, index) => {
+  commentListHtml = commentList.map((comment, index) => {
     return commentList[index].isEdit == true ?
       `<li class="comment">
       <div class="comment-header">
@@ -192,9 +192,8 @@ const commentSend = () => {
     })
   }).then((response) => {
     response.json().then((responseData) => {
-      commentList = responseData.comments
+    }).then((response) => {
       getListComment()
-      renderCommentList()
     })
   })
 }
