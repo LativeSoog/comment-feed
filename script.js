@@ -4,7 +4,7 @@ const inputName = document.getElementById('input__name');
 const textComment = document.getElementById('comment__text');
 const buttonAddComment = document.getElementById('button__add-comment');
 const loadingComment = document.getElementById('sendComment');
-loadingComment.setAttribute("style", "display: none");
+loadingComment.style.display = "none"
 
 
 //Получение и форматирование даты
@@ -52,7 +52,7 @@ let commentList = []
 //Загрузка комментариев
 const loadingCommentList = () => {
   const loadingPage = document.getElementById('loading');
-  loadingPage.setAttribute("style", "display: none");
+  loadingPage.style.display = "none"
 }
 
 
@@ -84,7 +84,9 @@ const editComment = () => {
     buttonEdit.addEventListener("click", (event) => {
       event.stopPropagation();
       index = buttonEdit.dataset.buttonEdit;
-      commentList[index].isEdit == false ? commentList[index].isEdit = true : commentList[index].isEdit = false
+      commentList[index].isEdit
+        ? (commentList[index].isEdit = false)
+        : (commentList[index].isEdit = true)
       renderCommentList()
     })
   }
@@ -112,9 +114,8 @@ const replyComment = () => {
       index = replyComment.dataset.commentContent;
       textComment.value =
         "QUOTE_START" +
-        ` ${commentList[index].text}
-${commentList[index].name}` +
-        "QUOTE_END "
+        ` ${commentList[index].text}` +
+        "QUOTE_END" + `${commentList[index].name}`
     })
   }
 }
@@ -186,8 +187,8 @@ const commentSend = () => {
     return textComment.classList.add('add-form-error')
   }
 
-  addForm.setAttribute("style", "display: none");
-  loadingComment.setAttribute("style", "display: block")
+  addForm.style.display = "none"
+  loadingComment.style.display = "flex"
 
   fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
     method: "POST",
@@ -212,8 +213,8 @@ const commentSend = () => {
       return getListComment()
     })
     .then((addForms) => {
-      addForm.setAttribute("style", "display: block")
-      loadingComment.setAttribute("style", "display: none")
+      addForm.style.display = "flex"
+      loadingComment.style.display = "none"
     })
 }
 
