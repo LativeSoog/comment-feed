@@ -26,7 +26,11 @@ const getListComment = () => {
     method: "GET"
   })
     .then((response) => {
-      return response.json()
+      if (response.status === 200) {
+        return response.json()
+      } else {
+        throw new Error("Сервер сломался")
+      }
     })
     .then((responseData) => {
       const transformComment = responseData.comments.map((comment) => {
@@ -41,7 +45,11 @@ const getListComment = () => {
       commentList = transformComment;
       renderCommentList()
       loadingCommentList();
+
+    }).catch((error) => {
+      alert("Test")
     })
+
 
 }
 
@@ -175,7 +183,6 @@ const renderCommentList = () => {
 
 renderCommentList()
 
-
 //Callback комментария
 const commentSend = () => {
   inputName.classList.remove('add-form-error')
@@ -189,6 +196,7 @@ const commentSend = () => {
 
   addForm.style.display = "none"
   loadingComment.style.display = "flex"
+  let commentCodeError;
 
   fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
     method: "POST",
@@ -204,15 +212,39 @@ const commentSend = () => {
         .replaceAll("/", "&frasl;")
         .replaceAll("QUOTE_START", '<div class="quote">')
         .replaceAll("QUOTE_END", '</div>'),
+      forceError: true,
     })
   })
     .then((response) => {
-      return response.json()
+      if (response.status === 200 || response.status === 201) {
+        inputName.value = "";
+        textComment.value = "";
+        return response.json()
+      } else if (response.status === 400) {
+        commentCodeError = response.status;
+        throw new Error("Ошибка 400 некорректные данные")
+      } else if (response.status === 500) {
+        commentCodeError = response.status;
+        throw new Error("Ошибка 500 сервер упал")
+      } else {
+        throw new Error("Ошибка")
+      }
     })
     .then((response) => {
       return getListComment()
     })
     .then((addForms) => {
+      addForm.style.display = "flex"
+      loadingComment.style.display = "none"
+    })
+    .catch((error) => {
+      if (commentCodeError === 400) {
+        alert("Имя пользователя или комментарий не могут быть короче 3-х символов")
+      } else if (commentCodeError === 500) {
+        alert("Сервер сломался, попробуй позже")
+      } else {
+        alert("Кажется, у вас сломался интернет, попробуйте позже")
+      }
       addForm.style.display = "flex"
       loadingComment.style.display = "none"
     })
@@ -225,9 +257,6 @@ buttonAddComment.addEventListener('click', () => {
   editComment()
   saveComment()
   renderCommentList()
-
-  inputName.value = ""
-  textComment.value = ""
 })
 
 //Отправка по кнопке Enter
