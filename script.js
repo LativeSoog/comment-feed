@@ -28,8 +28,10 @@ const getListComment = () => {
     .then((response) => {
       if (response.status === 200) {
         return response.json()
+      } else if (response.status === 500) {
+        throw new Error("Ошибка 500")
       } else {
-        throw new Error("Сервер сломался")
+        throw new Error("Ошибка соединения")
       }
     })
     .then((responseData) => {
@@ -47,7 +49,11 @@ const getListComment = () => {
       loadingCommentList();
 
     }).catch((error) => {
-      alert("Test")
+      if (error.message === "Ошибка 500") {
+        alert("Сервер сломался, попробуй позже")
+      } else {
+        alert("Кажется, у вас сломался интернет, попробуйте позже")
+      }
     })
 
 
@@ -196,7 +202,6 @@ const commentSend = () => {
 
   addForm.style.display = "none"
   loadingComment.style.display = "flex"
-  let commentCodeError;
 
   fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
     method: "POST",
@@ -221,13 +226,11 @@ const commentSend = () => {
         textComment.value = "";
         return response.json()
       } else if (response.status === 400) {
-        commentCodeError = response.status;
-        throw new Error("Ошибка 400 некорректные данные")
+        throw new Error("Ошибка 400")
       } else if (response.status === 500) {
-        commentCodeError = response.status;
-        throw new Error("Ошибка 500 сервер упал")
+        throw new Error("Ошибка 500")
       } else {
-        throw new Error("Ошибка")
+        throw new Error("Ошибка соединения")
       }
     })
     .then((response) => {
@@ -238,15 +241,21 @@ const commentSend = () => {
       loadingComment.style.display = "none"
     })
     .catch((error) => {
-      if (commentCodeError === 400) {
+      console.log(error.message);
+      if (error.message === "Ошибка 400") {
         alert("Имя пользователя или комментарий не могут быть короче 3-х символов")
-      } else if (commentCodeError === 500) {
-        alert("Сервер сломался, попробуй позже")
+        addForm.style.display = "flex"
+        loadingComment.style.display = "none"
+      } else if (error.message === "Ошибка 500") {
+        alert("Сервер сломался, пытаемся отправить повторно...")
+        addForm.style.display = "none"
+        loadingComment.style.display = "flex"
+        commentSend()
       } else {
         alert("Кажется, у вас сломался интернет, попробуйте позже")
+        addForm.style.display = "flex"
+        loadingComment.style.display = "none"
       }
-      addForm.style.display = "flex"
-      loadingComment.style.display = "none"
     })
 }
 
