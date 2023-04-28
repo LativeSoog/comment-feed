@@ -26,7 +26,13 @@ const getListComment = () => {
     method: "GET"
   })
     .then((response) => {
-      return response.json()
+      if (response.status === 200) {
+        return response.json()
+      } else if (response.status === 500) {
+        throw new Error("Ошибка 500")
+      } else {
+        throw new Error("Ошибка соединения")
+      }
     })
     .then((responseData) => {
       const transformComment = responseData.comments.map((comment) => {
@@ -41,7 +47,15 @@ const getListComment = () => {
       commentList = transformComment;
       renderCommentList()
       loadingCommentList();
+
+    }).catch((error) => {
+      if (error.message === "Ошибка 500") {
+        alert("Сервер сломался, попробуй позже")
+      } else {
+        alert("Кажется, у вас сломался интернет, попробуйте позже")
+      }
     })
+
 
 }
 
@@ -175,7 +189,6 @@ const renderCommentList = () => {
 
 renderCommentList()
 
-
 //Callback комментария
 const commentSend = () => {
   inputName.classList.remove('add-form-error')
@@ -204,10 +217,21 @@ const commentSend = () => {
         .replaceAll("/", "&frasl;")
         .replaceAll("QUOTE_START", '<div class="quote">')
         .replaceAll("QUOTE_END", '</div>'),
+      forceError: true,
     })
   })
     .then((response) => {
-      return response.json()
+      if (response.status === 200 || response.status === 201) {
+        inputName.value = "";
+        textComment.value = "";
+        return response.json()
+      } else if (response.status === 400) {
+        throw new Error("Ошибка 400")
+      } else if (response.status === 500) {
+        throw new Error("Ошибка 500")
+      } else {
+        throw new Error("Ошибка соединения")
+      }
     })
     .then((response) => {
       return getListComment()
@@ -215,6 +239,23 @@ const commentSend = () => {
     .then((addForms) => {
       addForm.style.display = "flex"
       loadingComment.style.display = "none"
+    })
+    .catch((error) => {
+      console.log(error.message);
+      if (error.message === "Ошибка 400") {
+        alert("Имя пользователя или комментарий не могут быть короче 3-х символов")
+        addForm.style.display = "flex"
+        loadingComment.style.display = "none"
+      } else if (error.message === "Ошибка 500") {
+        alert("Сервер сломался, пытаемся отправить повторно...")
+        addForm.style.display = "none"
+        loadingComment.style.display = "flex"
+        commentSend()
+      } else {
+        alert("Кажется, у вас сломался интернет, попробуйте позже")
+        addForm.style.display = "flex"
+        loadingComment.style.display = "none"
+      }
     })
 }
 
@@ -225,9 +266,6 @@ buttonAddComment.addEventListener('click', () => {
   editComment()
   saveComment()
   renderCommentList()
-
-  inputName.value = ""
-  textComment.value = ""
 })
 
 //Отправка по кнопке Enter
