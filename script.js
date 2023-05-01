@@ -48,6 +48,10 @@ const getListComment = () => {
       });
       commentList = transformComment;
       renderCommentList(listComment, commentList, getRenderListComment)
+      addLikeButton();
+      editComment();
+      saveComment();
+      replyComment()
       loadingCommentList();
 
     }).catch((error) => {
@@ -57,7 +61,6 @@ const getListComment = () => {
         console.log(error.message);
       }
     })
-
 
 }
 
