@@ -1,5 +1,3 @@
-import { apiFetchGet, apiFetchPost } from "./api.js";
-
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
 const inputName = document.getElementById('input__name');
@@ -24,7 +22,9 @@ const getDate = () => {
 
 //GET
 const getListComment = () => {
-  apiFetchGet()
+  return fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
+    method: "GET"
+  })
     .then((response) => {
       if (response.status === 200) {
         return response.json()
@@ -136,7 +136,7 @@ const replyComment = () => {
 
 //Рендер HTML
 const renderCommentList = () => {
-  let commentListHtml = commentList.map((comment, index) => {
+  commentListHtml = commentList.map((comment, index) => {
     return commentList[index].isEdit == true ?
       `<li class="comment">
       <div class="comment-header">
@@ -203,7 +203,23 @@ const commentSend = () => {
   addForm.style.display = "none"
   loadingComment.style.display = "flex"
 
-  apiFetchPost(inputName.value, textComment.value, getDate)
+  fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
+    method: "POST",
+    body: JSON.stringify({
+      name: inputName.value
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("/", "&frasl;"),
+      date: getDate(),
+      text: textComment.value
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("/", "&frasl;")
+        .replaceAll("QUOTE_START", '<div class="quote">')
+        .replaceAll("QUOTE_END", '</div>'),
+      forceError: true,
+    })
+  })
     .then((response) => {
       if (response.status === 200 || response.status === 201) {
         inputName.value = "";
