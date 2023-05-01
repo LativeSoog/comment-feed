@@ -1,4 +1,6 @@
 import { apiFetchGet, apiFetchPost } from "./api.js";
+import { getRenderListComment } from "./listComment.js";
+import { renderCommentList } from "./renderComment.js";
 
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
@@ -45,14 +47,14 @@ const getListComment = () => {
         };
       });
       commentList = transformComment;
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
       loadingCommentList();
 
     }).catch((error) => {
       if (error.message === "Ошибка 500") {
         alert("Сервер сломался, попробуй позже")
       } else {
-        alert("Кажется, у вас сломался интернет, попробуйте позже")
+        console.log(error.message);
       }
     })
 
@@ -86,7 +88,7 @@ const addLikeButton = () => {
         commentList[index].likes -= 1
         commentList[index].activeClass = ""
       }
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
     })
   }
 }
@@ -101,7 +103,7 @@ const editComment = () => {
       commentList[index].isEdit
         ? (commentList[index].isEdit = false)
         : (commentList[index].isEdit = true)
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
     })
   }
 }
@@ -115,7 +117,7 @@ const saveComment = () => {
       index = buttonSave.dataset.buttonSave;
       commentList[index].text = editTextComment.value
       commentList[index].isEdit = false;
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
     })
   }
 }
@@ -135,59 +137,59 @@ const replyComment = () => {
 }
 
 //Рендер HTML
-const renderCommentList = () => {
-  let commentListHtml = commentList.map((comment, index) => {
-    return commentList[index].isEdit == true ?
-      `<li class="comment">
-      <div class="comment-header">
-        <div>${comment.name}</div>
-        <div>${comment.date}</div>
-      </div>
-      <div class="comment-body">
-        <div class="comment-text">
-          <textarea id="edit${index}" class="editText" type="textarea">${comment.text}</textarea>
-        </div>
-        <div class="comment-text">
-        <button class="save-comment" data-button-save=${index}>Cохранить</button>
-        </div>
-      </div>
-      <div class="comment-footer">
-        <div class="likes">
-          <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
-        </div>
-      </div>
-    </li>` :
-      `<li class="comment" data-comment-content="${index}">
-      <div class="comment-header">
-        <div>${comment.name}</div>
-        <div>${comment.date}</div>
-      </div>
-      <div class="comment-body">
-        <div class="comment-text">
-          ${comment.text}
-        </div>
-        <div class="comment-text">
-        <button class="edit-comment" data-button-edit=${index}>Редактировать</button>
-        </div>
-      </div>
-      <div class="comment-footer">
-        <div class="likes">
-          <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
-        </div>
-      </div>
-    </li>`
-  }).join('')
-  listComment.innerHTML = commentListHtml
+// const renderCommentList = () => {
+//   let commentListHtml = commentList.map((comment, index) => {
+//     return commentList[index].isEdit == true ?
+//       `<li class="comment">
+//       <div class="comment-header">
+//         <div>${comment.name}</div>
+//         <div>${comment.date}</div>
+//       </div>
+//       <div class="comment-body">
+//         <div class="comment-text">
+//           <textarea id="edit${index}" class="editText" type="textarea">${comment.text}</textarea>
+//         </div>
+//         <div class="comment-text">
+//         <button class="save-comment" data-button-save=${index}>Cохранить</button>
+//         </div>
+//       </div>
+//       <div class="comment-footer">
+//         <div class="likes">
+//           <span class="likes-counter">${comment.likes}</span>
+//           <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+//         </div>
+//       </div>
+//     </li>` :
+//       `<li class="comment" data-comment-content="${index}">
+//       <div class="comment-header">
+//         <div>${comment.name}</div>
+//         <div>${comment.date}</div>
+//       </div>
+//       <div class="comment-body">
+//         <div class="comment-text">
+//           ${comment.text}
+//         </div>
+//         <div class="comment-text">
+//         <button class="edit-comment" data-button-edit=${index}>Редактировать</button>
+//         </div>
+//       </div>
+//       <div class="comment-footer">
+//         <div class="likes">
+//           <span class="likes-counter">${comment.likes}</span>
+//           <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+//         </div>
+//       </div>
+//     </li>`
+//   }).join('')
+//   listComment.innerHTML = commentListHtml
 
-  addLikeButton();
-  editComment();
-  saveComment();
-  replyComment()
-}
+//   addLikeButton();
+//   editComment();
+//   saveComment();
+//   replyComment()
+// }
 
-renderCommentList()
+renderCommentList(listComment, commentList, getRenderListComment)
 
 //Callback комментария
 const commentSend = () => {
@@ -249,7 +251,7 @@ buttonAddComment.addEventListener('click', () => {
   addLikeButton()
   editComment()
   saveComment()
-  renderCommentList()
+  renderCommentList(listComment, commentList, getRenderListComment)
 })
 
 //Отправка по кнопке Enter
