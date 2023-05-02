@@ -115,7 +115,6 @@ const editComment = () => {
       addLikeButton();
       editComment();
       saveComment();
-      replyComment()
       loadingCommentList();
     })
   }
@@ -214,6 +213,7 @@ const commentSend = () => {
 buttonAddComment.addEventListener('click', () => {
   commentSend()
   addLikeButton()
+  replyComment()
   editComment()
   saveComment()
   renderCommentList(listComment, commentList, getRenderListComment)
