@@ -1,6 +1,6 @@
 const getRenderListComment = (comment, index) => {
-    return commentList[index].isEdit == true ?
-        `<li class="comment">
+  return comment.isEdit == true ?
+    `<li class="comment">
       <div class="comment-header">
         <div>${comment.name}</div>
         <div>${comment.date}</div>
@@ -20,7 +20,7 @@ const getRenderListComment = (comment, index) => {
         </div>
       </div>
     </li>` :
-        `<li class="comment" data-comment-content="${index}">
+    `<li class="comment" data-comment-content="${index}">
       <div class="comment-header">
         <div>${comment.name}</div>
         <div>${comment.date}</div>
