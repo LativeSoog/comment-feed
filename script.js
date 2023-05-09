@@ -1,3 +1,7 @@
+import { apiFetchGet, apiFetchPost } from "./api.js";
+import { getRenderListComment } from "./listComment.js";
+import { renderCommentList } from "./renderComment.js";
+
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
 const inputName = document.getElementById('input__name');
@@ -22,9 +26,7 @@ const getDate = () => {
 
 //GET
 const getListComment = () => {
-  return fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
-    method: "GET"
-  })
+  apiFetchGet()
     .then((response) => {
       if (response.status === 200) {
         return response.json()
@@ -45,17 +47,20 @@ const getListComment = () => {
         };
       });
       commentList = transformComment;
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
+      addLikeButton();
+      editComment();
+      saveComment();
+      replyComment()
       loadingCommentList();
 
     }).catch((error) => {
       if (error.message === "Ошибка 500") {
         alert("Сервер сломался, попробуй позже")
       } else {
-        alert("Кажется, у вас сломался интернет, попробуйте позже")
+        console.log(error.message);
       }
     })
-
 
 }
 
@@ -75,7 +80,7 @@ const addLikeButton = () => {
   const buttonsLikesComment = document.querySelectorAll(".like-button");
   for (const buttonLike of buttonsLikesComment) {
     buttonLike.addEventListener("click", (event) => {
-      index = buttonLike.dataset.buttonLike;
+      const index = buttonLike.dataset.buttonLike;
       event.stopPropagation()
       if (commentList[index].activeLike === false) {
         commentList[index].activeLike = true
@@ -86,7 +91,12 @@ const addLikeButton = () => {
         commentList[index].likes -= 1
         commentList[index].activeClass = ""
       }
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
+      addLikeButton();
+      editComment();
+      saveComment();
+      replyComment()
+      loadingCommentList();
     })
   }
 }
@@ -97,11 +107,15 @@ const editComment = () => {
   for (const buttonEdit of buttonsEditComment) {
     buttonEdit.addEventListener("click", (event) => {
       event.stopPropagation();
-      index = buttonEdit.dataset.buttonEdit;
+      const index = buttonEdit.dataset.buttonEdit;
       commentList[index].isEdit
         ? (commentList[index].isEdit = false)
         : (commentList[index].isEdit = true)
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
+      addLikeButton();
+      editComment();
+      saveComment();
+      loadingCommentList();
     })
   }
 }
@@ -110,12 +124,16 @@ const editComment = () => {
 const saveComment = () => {
   const buttonsSaveComment = document.querySelectorAll(".save-comment")
   for (const buttonSave of buttonsSaveComment) {
+    const index = buttonSave.dataset.buttonSave;
     const editTextComment = document.getElementById(`edit${index}`)
     buttonSave.addEventListener("click", () => {
-      index = buttonSave.dataset.buttonSave;
       commentList[index].text = editTextComment.value
       commentList[index].isEdit = false;
-      renderCommentList()
+      renderCommentList(listComment, commentList, getRenderListComment)
+      addLikeButton();
+      editComment();
+      replyComment()
+      loadingCommentList();
     })
   }
 }
@@ -124,8 +142,9 @@ const saveComment = () => {
 const replyComment = () => {
   const contentsReplyComments = document.querySelectorAll(".comment");
   for (const replyComment of contentsReplyComments) {
-    replyComment.addEventListener("click", () => {
-      index = replyComment.dataset.commentContent;
+    replyComment.addEventListener("click", (event) => {
+      event.stopPropagation()
+      let index = replyComment.dataset.commentContent;
       textComment.value =
         "QUOTE_START" +
         ` ${commentList[index].text}` +
@@ -134,60 +153,7 @@ const replyComment = () => {
   }
 }
 
-//Рендер HTML
-const renderCommentList = () => {
-  commentListHtml = commentList.map((comment, index) => {
-    return commentList[index].isEdit == true ?
-      `<li class="comment">
-      <div class="comment-header">
-        <div>${comment.name}</div>
-        <div>${comment.date}</div>
-      </div>
-      <div class="comment-body">
-        <div class="comment-text">
-          <textarea id="edit${index}" class="editText" type="textarea">${comment.text}</textarea>
-        </div>
-        <div class="comment-text">
-        <button class="save-comment" data-button-save=${index}>Cохранить</button>
-        </div>
-      </div>
-      <div class="comment-footer">
-        <div class="likes">
-          <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
-        </div>
-      </div>
-    </li>` :
-      `<li class="comment" data-comment-content="${index}">
-      <div class="comment-header">
-        <div>${comment.name}</div>
-        <div>${comment.date}</div>
-      </div>
-      <div class="comment-body">
-        <div class="comment-text">
-          ${comment.text}
-        </div>
-        <div class="comment-text">
-        <button class="edit-comment" data-button-edit=${index}>Редактировать</button>
-        </div>
-      </div>
-      <div class="comment-footer">
-        <div class="likes">
-          <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
-        </div>
-      </div>
-    </li>`
-  }).join('')
-  listComment.innerHTML = commentListHtml
-
-  addLikeButton();
-  editComment();
-  saveComment();
-  replyComment()
-}
-
-renderCommentList()
+renderCommentList(listComment, commentList, getRenderListComment)
 
 //Callback комментария
 const commentSend = () => {
@@ -203,23 +169,7 @@ const commentSend = () => {
   addForm.style.display = "none"
   loadingComment.style.display = "flex"
 
-  fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
-    method: "POST",
-    body: JSON.stringify({
-      name: inputName.value
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll("/", "&frasl;"),
-      date: getDate(),
-      text: textComment.value
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll("/", "&frasl;")
-        .replaceAll("QUOTE_START", '<div class="quote">')
-        .replaceAll("QUOTE_END", '</div>'),
-      forceError: true,
-    })
-  })
+  apiFetchPost(inputName.value, textComment.value, getDate)
     .then((response) => {
       if (response.status === 200 || response.status === 201) {
         inputName.value = "";
@@ -263,9 +213,10 @@ const commentSend = () => {
 buttonAddComment.addEventListener('click', () => {
   commentSend()
   addLikeButton()
+  replyComment()
   editComment()
   saveComment()
-  renderCommentList()
+  renderCommentList(listComment, commentList, getRenderListComment)
 })
 
 //Отправка по кнопке Enter
