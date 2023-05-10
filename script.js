@@ -1,15 +1,15 @@
 import { apiFetchGet, apiFetchPost } from "./api.js";
 import { getRenderListComment } from "./listComment.js";
 import { renderCommentList } from "./renderComment.js";
+import { renderFormAdd, renderLoginComponent } from "./components/login-component.js";
 
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
-const inputName = document.getElementById('input__name');
-const textComment = document.getElementById('comment__text');
-const buttonAddComment = document.getElementById('button__add-comment');
 const loadingComment = document.getElementById('sendComment');
 loadingComment.style.display = "none"
 
+let token = "218383128"
+token = null;
 
 //Получение и форматирование даты
 const getDate = () => {
@@ -65,6 +65,116 @@ const getListComment = () => {
 }
 
 getListComment();
+
+const getListFormAndLogin = () => {
+  if (token) {
+    renderFormAdd()
+    const inputName = document.getElementById('input__name');
+    const textComment = document.getElementById('comment__text');
+    const buttonAddComment = document.getElementById('button__add-comment');
+
+    //Callback комментария
+    const commentSend = () => {
+      inputName.classList.remove('add-form-error')
+      textComment.classList.remove(`add-form-error`)
+      if (inputName.value.trim() === '') {
+        return inputName.classList.add('add-form-error');
+      }
+      if (textComment.value.trim() === '') {
+        return textComment.classList.add('add-form-error')
+      }
+
+      addForm.style.display = "none"
+      loadingComment.style.display = "flex"
+
+      apiFetchPost(inputName.value, textComment.value, getDate)
+        .then((response) => {
+          if (response.status === 200 || response.status === 201) {
+            inputName.value = "";
+            textComment.value = "";
+            return response.json()
+          } else if (response.status === 400) {
+            throw new Error("Ошибка 400")
+          } else if (response.status === 500) {
+            throw new Error("Ошибка 500")
+          } else {
+            throw new Error("Ошибка соединения")
+          }
+        })
+        .then((response) => {
+          return getListComment()
+        })
+        .then((addForms) => {
+          addForm.style.display = "flex"
+          loadingComment.style.display = "none"
+        })
+        .catch((error) => {
+          console.log(error.message);
+          if (error.message === "Ошибка 400") {
+            alert("Имя пользователя или комментарий не могут быть короче 3-х символов")
+            addForm.style.display = "flex"
+            loadingComment.style.display = "none"
+          } else if (error.message === "Ошибка 500") {
+            alert("Сервер сломался, пытаемся отправить повторно...")
+            addForm.style.display = "none"
+            loadingComment.style.display = "flex"
+            commentSend()
+          } else {
+            alert("Кажется, у вас сломался интернет, попробуйте позже")
+            addForm.style.display = "flex"
+            loadingComment.style.display = "none"
+          }
+        })
+    }
+
+    //Добавление комментария
+    buttonAddComment.addEventListener('click', () => {
+      commentSend()
+      addLikeButton()
+      replyComment()
+      editComment()
+      saveComment()
+      renderCommentList(listComment, commentList, getRenderListComment)
+    })
+
+    //Отправка по кнопке Enter
+    textComment.addEventListener('keydown', (key) => {
+      if (key.code === 'Enter') {
+        commentSend()
+      }
+    })
+
+    //Валидация данных
+    const switchButton = () => {
+      if (inputName.value.trim() !== '' && textComment.value.trim() !== '') {
+        buttonAddComment.disabled = false
+        buttonAddComment.classList.remove('add-form-button-disabled')
+      } else {
+        buttonAddComment.disabled = true;
+        buttonAddComment.classList.add('add-form-button-disabled')
+      }
+    }
+
+    inputName.addEventListener('input', switchButton);
+    textComment.addEventListener('input', switchButton)
+
+    //Удаление последнего комментария
+    const buttonDelComment = document.getElementById('button__del-comment').addEventListener('click', () => {
+      const lastComment = listComment.innerHTML.lastIndexOf('<li class="comment">');
+      listComment.innerHTML = listComment.innerHTML.slice(0, lastComment)
+    })
+  } else if (!token) {
+    renderLoginComponent({
+      setToken: (newToken) => {
+        token = newToken
+      },
+      getListFormAndLogin
+    })
+  }
+
+}
+
+getListFormAndLogin()
 
 let commentList = []
 
@@ -155,93 +265,3 @@ const replyComment = () => {
 
 renderCommentList(listComment, commentList, getRenderListComment)
 
-//Callback комментария
-const commentSend = () => {
-  inputName.classList.remove('add-form-error')
-  textComment.classList.remove(`add-form-error`)
-  if (inputName.value.trim() === '') {
-    return inputName.classList.add('add-form-error');
-  }
-  if (textComment.value.trim() === '') {
-    return textComment.classList.add('add-form-error')
-  }
-
-  addForm.style.display = "none"
-  loadingComment.style.display = "flex"
-
-  apiFetchPost(inputName.value, textComment.value, getDate)
-    .then((response) => {
-      if (response.status === 200 || response.status === 201) {
-        inputName.value = "";
-        textComment.value = "";
-        return response.json()
-      } else if (response.status === 400) {
-        throw new Error("Ошибка 400")
-      } else if (response.status === 500) {
-        throw new Error("Ошибка 500")
-      } else {
-        throw new Error("Ошибка соединения")
-      }
-    })
-    .then((response) => {
-      return getListComment()
-    })
-    .then((addForms) => {
-      addForm.style.display = "flex"
-      loadingComment.style.display = "none"
-    })
-    .catch((error) => {
-      console.log(error.message);
-      if (error.message === "Ошибка 400") {
-        alert("Имя пользователя или комментарий не могут быть короче 3-х символов")
-        addForm.style.display = "flex"
-        loadingComment.style.display = "none"
-      } else if (error.message === "Ошибка 500") {
-        alert("Сервер сломался, пытаемся отправить повторно...")
-        addForm.style.display = "none"
-        loadingComment.style.display = "flex"
-        commentSend()
-      } else {
-        alert("Кажется, у вас сломался интернет, попробуйте позже")
-        addForm.style.display = "flex"
-        loadingComment.style.display = "none"
-      }
-    })
-}
-
-//Добавление комментария
-buttonAddComment.addEventListener('click', () => {
-  commentSend()
-  addLikeButton()
-  replyComment()
-  editComment()
-  saveComment()
-  renderCommentList(listComment, commentList, getRenderListComment)
-})
-
-//Отправка по кнопке Enter
-textComment.addEventListener('keydown', (key) => {
-  if (key.code === 'Enter') {
-    commentSend()
-  }
-})
-
-//Валидация данных
-const switchButton = () => {
-  if (inputName.value.trim() !== '' && textComment.value.trim() !== '') {
-    buttonAddComment.disabled = false
-    buttonAddComment.classList.remove('add-form-button-disabled')
-  } else {
-    buttonAddComment.disabled = true;
-    buttonAddComment.classList.add('add-form-button-disabled')
-  }
-}
-
-inputName.addEventListener('input', switchButton);
-textComment.addEventListener('input', switchButton)
-
-//Удаление последнего комментария
-const buttonDelComment = document.getElementById('button__del-comment').addEventListener('click', () => {
-  const lastComment = listComment.innerHTML.lastIndexOf('<li class="comment">');
-  listComment.innerHTML = listComment.innerHTML.slice(0, lastComment)
-})
