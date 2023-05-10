@@ -37,6 +37,14 @@ const renderLoginComponent = ({ setToken, getListFormAndLogin }) => {
                 const login = document.getElementById("input__login").value;
                 const password = document.getElementById("input__password").value;
 
+                if (!login) {
+                    alert("Введите логин")
+                    return
+                } else if (!password) {
+                    alert("Введите пароль")
+                    return
+                }
+
                 apiFetchLogin({
                     login: login,
                     password: password,
@@ -45,6 +53,9 @@ const renderLoginComponent = ({ setToken, getListFormAndLogin }) => {
                         userName = user.user.name
                         setToken(`Bearer ${user.user.token}`)
                         getListFormAndLogin()
+                    })
+                    .catch((error) => {
+                        alert(error.message)
                     })
             })
         }

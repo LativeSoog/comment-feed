@@ -220,7 +220,6 @@ const addLikeButton = () => {
       addLikeButton();
       editComment();
       saveComment();
-      replyComment()
       loadingCommentList();
     })
   }
