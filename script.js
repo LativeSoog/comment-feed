@@ -64,7 +64,7 @@ const getListComment = () => {
 
 getListComment();
 
-//Рендер формы добавления комментария, формы
+//Рендер формы добавления комментария, формы авторизации
 const getListFormAndLogin = () => {
   if (token) {
     renderFormAdd()
@@ -170,6 +170,7 @@ const getListFormAndLogin = () => {
         })
       }
     }
+    replyComment()
 
     //Удаление последнего комментария
     const buttonDelComment = document.getElementById('button__del-comment').addEventListener('click', () => {
@@ -184,9 +185,6 @@ const getListFormAndLogin = () => {
       getListFormAndLogin
     })
   }
-
-
-
 }
 
 getListFormAndLogin()
