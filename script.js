@@ -51,7 +51,6 @@ const getListComment = () => {
       addLikeButton();
       editComment();
       saveComment();
-      replyComment()
       loadingCommentList();
 
     }).catch((error) => {
@@ -90,7 +89,6 @@ const getListFormAndLogin = () => {
       apiFetchPost(token, textComment.value, getDate)
         .then((response) => {
           if (response.status === 200 || response.status === 201) {
-            inputName.value = "";
             textComment.value = "";
             return response.json()
           } else if (response.status === 400) {
@@ -158,6 +156,21 @@ const getListFormAndLogin = () => {
     inputName.addEventListener('input', switchButton);
     textComment.addEventListener('input', switchButton)
 
+    //Ответ на комментарий
+    const replyComment = () => {
+      const contentsReplyComments = document.querySelectorAll(".comment");
+      for (const replyComment of contentsReplyComments) {
+        replyComment.addEventListener("click", (event) => {
+          event.stopPropagation()
+          let index = replyComment.dataset.commentContent;
+          textComment.value =
+            "QUOTE_START" +
+            ` ${commentList[index].text}` +
+            "QUOTE_END" + `${commentList[index].name}`
+        })
+      }
+    }
+
     //Удаление последнего комментария
     const buttonDelComment = document.getElementById('button__del-comment').addEventListener('click', () => {
       const lastComment = listComment.innerHTML.lastIndexOf('<li class="comment">');
@@ -171,6 +184,8 @@ const getListFormAndLogin = () => {
       getListFormAndLogin
     })
   }
+
+
 
 }
 
@@ -242,26 +257,12 @@ const saveComment = () => {
       renderCommentList(listComment, commentList, getRenderListComment)
       addLikeButton();
       editComment();
-      replyComment()
       loadingCommentList();
     })
   }
 }
 
-//Ответ на комментарий
-const replyComment = () => {
-  const contentsReplyComments = document.querySelectorAll(".comment");
-  for (const replyComment of contentsReplyComments) {
-    replyComment.addEventListener("click", (event) => {
-      event.stopPropagation()
-      let index = replyComment.dataset.commentContent;
-      textComment.value =
-        "QUOTE_START" +
-        ` ${commentList[index].text}` +
-        "QUOTE_END" + `${commentList[index].name}`
-    })
-  }
-}
+
 
 renderCommentList(listComment, commentList, getRenderListComment)
 
