@@ -1,19 +1,18 @@
 //API GET
 const apiFetchGet = () => {
-    return fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
+    return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments", {
         method: "GET"
     })
 }
 
 //API POST
-const apiFetchPost = (inputName, textComment, getDate) => {
-    return fetch("https://webdev-hw-api.vercel.app/api/v1/vitaliy-gusev/comments", {
+const apiFetchPost = (token, textComment, getDate) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments", {
         method: "POST",
+        headers: {
+            Authorization: token,
+        },
         body: JSON.stringify({
-            name: inputName
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("/", "&frasl;"),
             date: getDate(),
             text: textComment
                 .replaceAll("<", "&lt;")

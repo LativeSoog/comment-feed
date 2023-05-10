@@ -1,9 +1,10 @@
 import { apiFetchLogin } from "../api.js"
 
-const addFormAndLogin = document.getElementById("form")
+const addFormAndLogin = document.getElementById("form");
+let userName;
 const renderFormAdd = () => {
     const addFormHtml = `
-    <input type="text" class="add-form-name" id="input__name" placeholder="Введите ваше имя" value="" />
+    <input type="text" class="add-form-name" id="input__name" placeholder="Введите ваше имя" value="${userName}" disabled />
     <textarea type="textarea" class="add-form-text" id="comment__text" placeholder="Введите ваш коментарий" rows="4"></textarea>
     <div class="add-form-row" id="">
       <button class="add-form-button" id="button__add-comment">Написать</button>
@@ -27,22 +28,22 @@ const renderLoginComponent = ({ setToken, getListFormAndLogin }) => {
         addFormAndLogin.innerHTML = renderLoginHtml
         if (!isLoginMode) {
             document.getElementById("button__login-mode").addEventListener("click", () => {
-                console.log(`object`);
                 isLoginMode = !isLoginMode
                 renderLogin()
             })
         } else {
             document.getElementById("button__login").addEventListener("click", () => {
-                const login = "admin";
-                const password = "admin";
+
+                const login = document.getElementById("input__login").value;
+                const password = document.getElementById("input__password").value;
 
                 apiFetchLogin({
                     login: login,
                     password: password,
                 })
                     .then((user) => {
-                        console.log(`kruto`);
-                        setToken("sfdihfishdfi")
+                        userName = user.user.name
+                        setToken(`Bearer ${user.user.token}`)
                         getListFormAndLogin()
                     })
             })

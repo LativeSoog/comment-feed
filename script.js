@@ -87,7 +87,7 @@ const getListFormAndLogin = () => {
       addForm.style.display = "none"
       loadingComment.style.display = "flex"
 
-      apiFetchPost(inputName.value, textComment.value, getDate)
+      apiFetchPost(token, textComment.value, getDate)
         .then((response) => {
           if (response.status === 200 || response.status === 201) {
             inputName.value = "";
@@ -111,7 +111,7 @@ const getListFormAndLogin = () => {
         .catch((error) => {
           console.log(error.message);
           if (error.message === "Ошибка 400") {
-            alert("Имя пользователя или комментарий не могут быть короче 3-х символов")
+            alert("Комментарий не может быть короче 3-х символов")
             addForm.style.display = "flex"
             loadingComment.style.display = "none"
           } else if (error.message === "Ошибка 500") {
