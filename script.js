@@ -8,8 +8,7 @@ const addForm = document.getElementById('form')
 const loadingComment = document.getElementById('sendComment');
 loadingComment.style.display = "none"
 
-let token = "218383128"
-token = null;
+let token = null;
 
 //Получение и форматирование даты
 const getDate = () => {
@@ -24,7 +23,7 @@ const getDate = () => {
   return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 
-//GET
+//GET-рендер ленты комментариев
 const getListComment = () => {
   apiFetchGet()
     .then((response) => {
@@ -65,6 +64,7 @@ const getListComment = () => {
 
 getListComment();
 
+//Рендер формы добавления комментария, формы
 const getListFormAndLogin = () => {
   if (token) {
     renderFormAdd()

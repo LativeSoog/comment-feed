@@ -24,7 +24,7 @@ const renderLoginComponent = ({ setToken, getListFormAndLogin }) => {
       <button class="add-form-button" id="button__login">Войти</button>
     </div>`
             :
-            `Чтобы добавлять комментарии, необходимо <span id="button__login-mode">авторизоваться</span>`
+            `Чтобы добавлять комментарии, необходимо <span style="cursor: pointer; text-decoration: underline" id="button__login-mode">авторизоваться</span>`
         addFormAndLogin.innerHTML = renderLoginHtml
         if (!isLoginMode) {
             document.getElementById("button__login-mode").addEventListener("click", () => {
