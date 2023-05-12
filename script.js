@@ -2,6 +2,7 @@ import { apiFetchGet, apiFetchPost } from "./api.js";
 import { getRenderListComment } from "./listComment.js";
 import { renderCommentList } from "./renderComment.js";
 import { renderFormAdd, renderLoginComponent } from "./components/login-component.js";
+import { format } from "date-fns";
 
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
@@ -39,7 +40,7 @@ const getListComment = () => {
       const transformComment = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
-          date: new Date(comment.date).toLocaleString(),
+          date: format(new Date(comment.date), 'yyyy-MM-dd hh.mm.ss'),
           text: comment.text,
           likes: comment.likes,
           activeLike: comment.isLiked,
@@ -86,7 +87,7 @@ const getListFormAndLogin = () => {
       addForm.style.display = "none"
       loadingComment.style.display = "flex"
 
-      apiFetchPost(token, textComment.value, getDate)
+      apiFetchPost(token, textComment.value, format)
         .then((response) => {
           if (response.status === 200 || response.status === 201) {
             textComment.value = "";

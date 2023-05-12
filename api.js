@@ -6,14 +6,14 @@ const apiFetchGet = () => {
 }
 
 //API POST
-const apiFetchPost = (token, textComment, getDate) => {
+const apiFetchPost = (token, textComment, format) => {
     return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments", {
         method: "POST",
         headers: {
             Authorization: token,
         },
         body: JSON.stringify({
-            date: getDate(),
+            date: format(new Date(), 'yyyy-MM-dd hh.mm.ss'),
             text: textComment
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
