@@ -1,8 +1,9 @@
-import { apiFetchGet, apiFetchPost } from "./api.js";
+import { apiFetchGet, apiFetchPost, apiFetchDelete } from "./api.js";
 import { getRenderListComment } from "./listComment.js";
 import { renderCommentList } from "./renderComment.js";
 import { renderFormAdd, renderLoginComponent } from "./components/login-component.js";
 import { format } from "date-fns";
+import { deleteComment } from "./components/delete_comment-component.js";
 
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
@@ -10,19 +11,6 @@ const loadingComment = document.getElementById('sendComment');
 loadingComment.style.display = "none"
 
 let token = null;
-
-//Получение и форматирование даты
-const getDate = () => {
-  const date = new Date();
-
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear().toString().slice(-2);
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-
-  return `${day}.${month}.${year} ${hours}:${minutes}`;
-}
 
 //GET-рендер ленты комментариев
 const getListComment = () => {
@@ -44,12 +32,14 @@ const getListComment = () => {
           text: comment.text,
           likes: comment.likes,
           activeLike: comment.isLiked,
+          id: comment.id,
         };
       });
       commentList = transformComment;
       renderCommentList(listComment, commentList, getRenderListComment)
       addLikeButton();
       editComment();
+      deleteComment({ token, getListComment })
       saveComment();
       loadingCommentList();
 
@@ -173,11 +163,6 @@ const getListFormAndLogin = () => {
     }
     replyComment()
 
-    //Удаление последнего комментария
-    const buttonDelComment = document.getElementById('button__del-comment').addEventListener('click', () => {
-      const lastComment = listComment.innerHTML.lastIndexOf('<li class="comment">');
-      listComment.innerHTML = listComment.innerHTML.slice(0, lastComment)
-    })
   } else if (!token) {
     renderLoginComponent({
       setToken: (newToken) => {
@@ -242,6 +227,10 @@ const editComment = () => {
     })
   }
 }
+
+//Функция удаления комментариев
+
+
 
 //Сохранение комментария
 const saveComment = () => {

@@ -62,4 +62,21 @@ const apiFetchRegistration = ({ name, login, password }) => {
         })
 }
 
-export { apiFetchGet, apiFetchPost, apiFetchLogin, apiFetchRegistration }
+//API DELETE
+const apiFetchDelete = ({ token, id }) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments/" + id, {
+        method: "DELETE",
+        headers: {
+            Authorization: token,
+        }
+    })
+        .then((response) => {
+            if (response.status === 401) {
+                throw new Error("Нет авторизации")
+            } else {
+                return response.json()
+            }
+        })
+}
+
+export { apiFetchGet, apiFetchPost, apiFetchDelete, apiFetchLogin, apiFetchRegistration }

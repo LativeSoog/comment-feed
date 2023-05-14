@@ -31,6 +31,7 @@ const getRenderListComment = (comment, index) => {
         </div>
         <div class="comment-text">
         <button class="edit-comment" data-button-edit=${index}>Редактировать</button>
+        <button class="delete-comment" data-button-delete=${comment.id}>Удалить</button>
         </div>
       </div>
       <div class="comment-footer">
