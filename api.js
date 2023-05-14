@@ -79,4 +79,17 @@ const apiFetchDelete = ({ token, id }) => {
         })
 }
 
-export { apiFetchGet, apiFetchPost, apiFetchDelete, apiFetchLogin, apiFetchRegistration }
+//API LIKE
+const apiFetchLike = ({ token, id }) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments/" + id + "/toggle-like", {
+        method: "POST",
+        headers: {
+            Authorization: token,
+        }
+    })
+        .then((response) => {
+            return response.json()
+        })
+}
+
+export { apiFetchGet, apiFetchPost, apiFetchDelete, apiFetchLogin, apiFetchRegistration, apiFetchLike }

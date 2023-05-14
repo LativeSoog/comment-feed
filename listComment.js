@@ -16,7 +16,7 @@ const getRenderListComment = (comment, index) => {
       <div class="comment-footer">
         <div class="likes">
           <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+          <button class="like-button ${comment.activeClass}" data-button-like="${comment.id}"></button>
         </div>
       </div>
     </li>` :
@@ -37,7 +37,7 @@ const getRenderListComment = (comment, index) => {
       <div class="comment-footer">
         <div class="likes">
           <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.activeClass}" data-button-like="${index}"></button>
+          <button class="like-button ${comment.activeClass}" data-button-like="${comment.id}"></button>
         </div>
       </div>
     </li>`

@@ -4,6 +4,7 @@ import { renderCommentList } from "./renderComment.js";
 import { renderFormAdd, renderLoginComponent } from "./components/login-component.js";
 import { format } from "date-fns";
 import { deleteComment } from "./components/delete_comment-component.js";
+import { likeComment } from "./components/like_comment-component.js";
 
 const listComment = document.getElementById('comments__list');
 const addForm = document.getElementById('form')
@@ -37,7 +38,7 @@ const getListComment = () => {
       });
       commentList = transformComment;
       renderCommentList(listComment, commentList, getRenderListComment)
-      addLikeButton();
+      likeComment({ token, getListComment })
       editComment();
       deleteComment({ token, getListComment })
       saveComment();
@@ -119,7 +120,7 @@ const getListFormAndLogin = () => {
     //Добавление комментария
     buttonAddComment.addEventListener('click', () => {
       commentSend()
-      addLikeButton()
+      likeComment({ token, getListComment })
       replyComment()
       editComment()
       saveComment()
@@ -185,29 +186,30 @@ const loadingCommentList = () => {
 
 
 //Добавление лайка
-const addLikeButton = () => {
-  const buttonsLikesComment = document.querySelectorAll(".like-button");
-  for (const buttonLike of buttonsLikesComment) {
-    buttonLike.addEventListener("click", (event) => {
-      const index = buttonLike.dataset.buttonLike;
-      event.stopPropagation()
-      if (commentList[index].activeLike === false) {
-        commentList[index].activeLike = true
-        commentList[index].likes += 1
-        commentList[index].activeClass = "-active-like"
-      } else {
-        commentList[index].activeLike = false
-        commentList[index].likes -= 1
-        commentList[index].activeClass = ""
-      }
-      renderCommentList(listComment, commentList, getRenderListComment)
-      addLikeButton();
-      editComment();
-      saveComment();
-      loadingCommentList();
-    })
-  }
-}
+// const addLikeButton = () => {
+//   const buttonsLikesComment = document.querySelectorAll(".like-button");
+//   for (const buttonLike of buttonsLikesComment) {
+//     buttonLike.addEventListener("click", (event) => {
+//       const index = buttonLike.dataset.buttonLike;
+//       event.stopPropagation()
+//       if (commentList[index].activeLike === false) {
+//         commentList[index].activeLike = true
+//         commentList[index].likes += 1
+//         commentList[index].activeClass = "-active-like"
+//       } else {
+//         commentList[index].activeLike = false
+//         commentList[index].likes -= 1
+//         commentList[index].activeClass = ""
+//       }
+//       renderCommentList(listComment, commentList, getRenderListComment)
+//       addLikeButton();
+//       editComment();
+//       saveComment();
+//       loadingCommentList();
+//     })
+//   }
+// }
+
 
 //Редактирование комментария
 const editComment = () => {
@@ -220,7 +222,7 @@ const editComment = () => {
         ? (commentList[index].isEdit = false)
         : (commentList[index].isEdit = true)
       renderCommentList(listComment, commentList, getRenderListComment)
-      addLikeButton();
+      likeComment({ token, getListComment })
       editComment();
       saveComment();
       loadingCommentList();
@@ -242,7 +244,7 @@ const saveComment = () => {
       commentList[index].text = editTextComment.value
       commentList[index].isEdit = false;
       renderCommentList(listComment, commentList, getRenderListComment)
-      addLikeButton();
+      likeComment({ token, getListComment })
       editComment();
       loadingCommentList();
     })
