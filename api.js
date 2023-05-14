@@ -43,4 +43,23 @@ const apiFetchLogin = ({ login, password }) => {
         })
 }
 
-export { apiFetchGet, apiFetchPost, apiFetchLogin }
+//API REGISTRATION
+const apiFetchRegistration = ({ name, login, password }) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/user", {
+        method: "POST",
+        body: JSON.stringify({
+            name,
+            login,
+            password,
+        }),
+    })
+        .then((response) => {
+            if (response.status === 400) {
+                throw new Error("Такой пользователь уже существует")
+            } else {
+                return response.json()
+            }
+        })
+}
+
+export { apiFetchGet, apiFetchPost, apiFetchLogin, apiFetchRegistration }
