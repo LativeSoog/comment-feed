@@ -6,14 +6,14 @@ const apiFetchGet = () => {
 }
 
 //API POST
-const apiFetchPost = (token, textComment, getDate) => {
+const apiFetchPost = (token, textComment, format) => {
     return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments", {
         method: "POST",
         headers: {
             Authorization: token,
         },
         body: JSON.stringify({
-            date: getDate(),
+            date: format(new Date(), 'yyyy-MM-dd hh.mm.ss'),
             text: textComment
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
@@ -43,4 +43,53 @@ const apiFetchLogin = ({ login, password }) => {
         })
 }
 
-export { apiFetchGet, apiFetchPost, apiFetchLogin }
+//API REGISTRATION
+const apiFetchRegistration = ({ name, login, password }) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/user", {
+        method: "POST",
+        body: JSON.stringify({
+            name,
+            login,
+            password,
+        }),
+    })
+        .then((response) => {
+            if (response.status === 400) {
+                throw new Error("Такой пользователь уже существует")
+            } else {
+                return response.json()
+            }
+        })
+}
+
+//API DELETE
+const apiFetchDelete = ({ token, id }) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments/" + id, {
+        method: "DELETE",
+        headers: {
+            Authorization: token,
+        }
+    })
+        .then((response) => {
+            if (response.status === 401) {
+                throw new Error("Нет авторизации")
+            } else {
+                return response.json()
+            }
+        })
+}
+
+//API LIKE
+const apiFetchLike = ({ token, id }) => {
+    return fetch("https://webdev-hw-api.vercel.app/api/v2/vitaliy-gusev/comments/" + id + "/toggle-like", {
+        method: "POST",
+        headers: {
+            Authorization: token,
+        }
+    })
+        .then((response) => {
+            return response.json()
+        })
+}
+
+export { apiFetchGet, apiFetchPost, apiFetchDelete, apiFetchLogin, apiFetchRegistration, apiFetchLike }

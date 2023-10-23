@@ -135,9 +135,9 @@ body {
     cursor: pointer;
   }
 
-  .del-last-comment {
+  .delete-comment {
     margin-top: 24px;
-    font-size: 24px;
+    font-size: 18px;
     padding: 10px 20px;
     color: #ffffff;
     background-color: #880000;
