@@ -1,9 +1,11 @@
-# Проект "Комментарии"
+# Comment Feed
 
-https://lativesoog.github.io/webdev-dom-homework/
+## Application description
+A comment feed that allows you to post, edit, and delete comments
 
-Верстка для учебного проекта студентов Skypro
+## Technology stack
+- JavaScript
+- WebPack
 
-## Как разрабатывать
-
-Открой index.html в браузере
+## Commands
+- `npm run dev` - mode development;
